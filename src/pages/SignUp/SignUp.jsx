@@ -8,6 +8,9 @@ import {
   Grid,
   Link,
 } from "@material-ui/core";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +36,8 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
+  const navigate = useNavigate();
+
   const handleSignUp = (event) => {
     event.preventDefault();
     // Password matching logic
@@ -41,9 +46,21 @@ export default function SignUp() {
       return;
     }
     // Passwords match, proceed with sign up
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        localStorage.setItem("accessToken", user.accessToken);
+        localStorage.setItem("uid", user.uid);
+        navigate("/");
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(error);
+        // ..
+      });
   };
 
   return (

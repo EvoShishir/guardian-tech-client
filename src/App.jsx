@@ -5,13 +5,17 @@ import SignUp from "./pages/SignUp/SignUp";
 import HomePage from "./pages/HomePage/HomePage";
 import Cases from "./pages/Cases/Cases";
 import Contacts from "./pages/Contacts/Contacts";
-import Danger from "./pages/Danger/Danger";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <HomePage />,
+      element: (
+        <ProtectedRoute>
+          <HomePage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/cases",
@@ -28,10 +32,6 @@ function App() {
     {
       path: "/contacts",
       element: <Contacts />,
-    },
-    {
-      path: "/danger",
-      element: <Danger />,
     },
   ]);
 

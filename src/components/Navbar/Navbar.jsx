@@ -1,27 +1,36 @@
 import React from "react";
 import { Button, Dropdown, Space } from "antd";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const Navbar = () => {
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("uid");
+        window.location.reload();
+      })
+      .catch((error) => {
+        // An error happened.
+        console.error("Error signing out:", error);
+      });
+  };
+
   const items = [
     {
-      label: <a href="/login">Login</a>,
+      label: <a href="/contacts">Contacts</a>,
       key: "0",
     },
     {
-      label: <a href="/sign-up">Sign Up</a>,
+      label: <a onClick={handleLogout}>Logout</a>,
       key: "1",
-    },
-    {
-      label: <a href="/contacts">Contacts</a>,
-      key: "2",
-    },
-    {
-      label: <a href="/logout">Logout</a>,
-      key: "3",
       danger: true,
     },
   ];
+
   return (
     <div
       style={{

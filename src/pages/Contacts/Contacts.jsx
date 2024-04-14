@@ -38,20 +38,23 @@ const Contacts = () => {
   const classes = useStyles();
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [contacts, setContacts] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Here you can do something with the name and phone number, like storing them in a database
-    const newContact = { name, phoneNumber };
+    // Here you can do something with the name, phone number, and email, like storing them in a database
+    const newContact = { name, phoneNumber, email };
     setContacts([...contacts, newContact]);
     setName("");
     setPhoneNumber("");
+    setEmail("");
   };
 
   return (
     <>
       <Navbar />
+      <h1 style={{ textAlign: "center" }}>Emergency Contacts</h1>
       <Container component="main" maxWidth="md" className={classes.root}>
         <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container direction="column" spacing={2}>
@@ -84,6 +87,20 @@ const Contacts = () => {
               />
             </Grid>
             <Grid item>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@example.com"
+              />
+            </Grid>
+            <Grid item>
               <Button
                 type="submit"
                 fullWidth
@@ -102,6 +119,7 @@ const Contacts = () => {
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Phone Number</TableCell>
+                <TableCell>Email</TableCell> {/* Added */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -109,6 +127,7 @@ const Contacts = () => {
                 <TableRow key={index}>
                   <TableCell>{contact.name}</TableCell>
                   <TableCell>{contact.phoneNumber}</TableCell>
+                  <TableCell>{contact.email}</TableCell> {/* Added */}
                 </TableRow>
               ))}
             </TableBody>
