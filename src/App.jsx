@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage/HomePage";
 import Cases from "./pages/Cases/Cases";
 import Contacts from "./pages/Contacts/Contacts";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import SingleArea from "./pages/SingleArea/SingleArea";
 
 function App() {
   const router = createBrowserRouter([
@@ -20,6 +21,10 @@ function App() {
     {
       path: "/cases",
       element: <Cases />,
+    },
+    {
+      path: "/cases/:id",
+      element: <SingleArea />,
     },
     {
       path: "/login",

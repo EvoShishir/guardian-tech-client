@@ -1,24 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Button, Card, CardContent } from "@material-ui/core";
+import { Button, Card, CardContent, Grid } from "@material-ui/core";
 import addNotification from "react-push-notification";
+import axios from "axios";
+import { BACKEND } from "../../constants";
 
 const AreaSelector = () => {
-  const elaka = ["Mohammadpur", "Lalbagh", "Dhanmondi"];
-  const rasta = ["tajmahal road", "nurjahan road", "town hall"];
+  const [elakas, setElakas] = useState([]);
+  const [rastas, setRastas] = useState([]);
+
+  const timerValue = 300;
+  const emergencyTimerValue = 360;
 
   const [area, setArea] = useState(null);
   const [subArea, setSubArea] = useState(null);
   const [disabled, setDisabled] = useState(true);
   const [btnDisabled, setBtnDisabled] = useState(true);
-  const [timer, setTimer] = useState(300);
-  const [emergencyTimer, setEmergencyTimer] = useState(360);
+  const [timer, setTimer] = useState(timerValue);
+  const [emergencyTimer, setEmergencyTimer] = useState(emergencyTimerValue);
   const [regularInterval, setRegularInterval] = useState(null);
   const [emergencyInterval, setEmergencyInterval] = useState(null);
+  const [displayTimer, setDisplayTimer] = useState("none");
+  const [displayEmergencyTimer, setDisplayEmergencyTimer] = useState("none");
 
-  console.log(area);
-  console.log(subArea);
+  useEffect(() => {
+    fetchAreas();
+    fetchSubAreas();
+  }, [area]);
+
+  const fetchAreas = async () => {
+    const { data } = await axios.get(`${BACKEND}/areas/all`);
+    setElakas(data.areaArr);
+  };
+
+  const fetchSubAreas = async () => {
+    const { data } = await axios.get(`${BACKEND}/areas/${area}`);
+    setRastas(data.subAreaArr);
+  };
 
   const sendNotification = () => {
     addNotification({
@@ -36,8 +55,9 @@ const AreaSelector = () => {
         if (prevTimer > 0) {
           return prevTimer - 1;
         } else {
-          // sendNotification();
+          sendNotification();
           clearInterval(interval);
+          setDisplayEmergencyTimer("block");
           return prevTimer;
         }
       });
@@ -61,8 +81,9 @@ const AreaSelector = () => {
   };
 
   const handleButtonClick = () => {
-    setTimer(300);
-    setEmergencyTimer(360);
+    setTimer(timerValue);
+    setEmergencyTimer(emergencyTimerValue);
+    setDisplayEmergencyTimer("none");
   };
 
   return (
@@ -76,38 +97,48 @@ const AreaSelector = () => {
     >
       <h2>Where are you located?</h2>
       <div style={{ margin: "auto" }}>
-        <Autocomplete
-          onChange={(e, newValue) => {
-            e.preventDefault();
-            setArea(newValue);
-            setDisabled(false);
-          }}
-          id="controllable-states-demo"
-          options={elaka}
-          sx={{ width: 700 }}
-          renderInput={(params) => (
-            <TextField {...params} label="Select an area" />
-          )}
-        />
-        <br />
-        <Autocomplete
-          disablePortal
-          onChange={(e, newValue) => {
-            e.preventDefault();
-            setSubArea(newValue);
-            setBtnDisabled(false);
-          }}
-          id="combo-box-demo"
-          disabled={disabled}
-          options={rasta}
-          sx={{ width: 700 }}
-          renderInput={(params) => <TextField {...params} label="Sub area" />}
-        />
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Autocomplete
+              onChange={(e, newValue) => {
+                e.preventDefault();
+                setArea(newValue);
+                setDisabled(false);
+                // fetchSubAreas();
+              }}
+              id="controllable-states-demo"
+              options={elakas}
+              sx={{ width: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Select an area" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Autocomplete
+              disablePortal
+              onChange={(e, newValue) => {
+                e.preventDefault();
+                setSubArea(newValue);
+                setBtnDisabled(false);
+              }}
+              id="combo-box-demo"
+              disabled={disabled}
+              options={rastas}
+              sx={{ width: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Sub area" />
+              )}
+            />
+          </Grid>
+        </Grid>
         <br />
         <Button
           onClick={() => {
             startCountdown();
             startEmergencyCountdown();
+            setDisplayTimer("block");
+            setBtnDisabled(true);
           }}
           fullWidth
           disabled={btnDisabled}
@@ -119,15 +150,20 @@ const AreaSelector = () => {
         </Button>
         <div>
           <br />
-          <Card>
+          <Card
+            style={{
+              display: `${displayTimer}`,
+            }}
+          >
             <CardContent>
               <h2>You will be notified in {timer} second(s)</h2>
-              <h2>Initiating emergency SOS in {emergencyTimer} second(s)</h2>
+              <h2 style={{ display: `${displayEmergencyTimer}` }}>
+                Initiating emergency SOS in {emergencyTimer} second(s)
+              </h2>
               <div style={{ display: "flex", gap: "10px" }}>
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={btnDisabled}
                   onClick={() => {
                     window.location.reload();
                   }}
@@ -137,7 +173,6 @@ const AreaSelector = () => {
                 <Button
                   variant="contained"
                   color="secondary"
-                  disabled={btnDisabled}
                   onClick={() => {
                     clearInterval(regularInterval);
                     clearInterval(emergencyInterval);

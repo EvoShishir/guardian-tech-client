@@ -10,8 +10,15 @@ import {
   Paper,
   Button,
 } from "@material-ui/core";
+import { useNavigate } from "react-router-dom";
 
 const Cases = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`1`);
+  };
+
   return (
     <div>
       <Navbar />
@@ -19,7 +26,10 @@ const Cases = () => {
         <h1>Cases in different areas</h1>
         <TableContainer
           component={Paper}
-          style={{ margin: "auto", maxWidth: "600px" }}
+          style={{
+            margin: "auto",
+            maxWidth: "600px",
+          }}
         >
           <Table>
             <TableHead>
@@ -31,35 +41,15 @@ const Cases = () => {
             <TableBody>
               <TableRow>
                 <TableCell>
-                  <Button onClick={() => console.log("Mohammadpur clicked")}>
-                    Mohammadpur
-                  </Button>
+                  <Button onClick={handleClick}>Mohammadpur</Button>
                 </TableCell>
-                <TableCell>
-                  <Button
-                    onClick={() => console.log("Cases for Mohammadpur clicked")}
-                  >
-                    69
-                  </Button>
-                </TableCell>
+                <TableCell>69</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>
-                  <Button
-                    onClick={() => console.log("Some Other Area clicked")}
-                  >
-                    Some Other Area
-                  </Button>
+                  <Button onClick={handleClick}>Some Other Area</Button>
                 </TableCell>
-                <TableCell>
-                  <Button
-                    onClick={() =>
-                      console.log("Cases for Some Other Area clicked")
-                    }
-                  >
-                    45
-                  </Button>
-                </TableCell>
+                <TableCell>45</TableCell>
               </TableRow>
               {/* Add more rows as needed */}
             </TableBody>

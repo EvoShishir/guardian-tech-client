@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Container,
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100vh",
+    height: "80vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -35,6 +35,13 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   TextField,
@@ -14,6 +14,8 @@ import {
   Paper,
 } from "@material-ui/core";
 import Navbar from "../../components/Navbar/Navbar";
+import { BACKEND } from "../../constants";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,16 +38,43 @@ const useStyles = makeStyles((theme) => ({
 
 const Contacts = () => {
   const classes = useStyles();
+  const [contacts, setContacts] = useState([]);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [contacts, setContacts] = useState([]);
 
-  const handleSubmit = (event) => {
+  const uid = localStorage.getItem("uid");
+
+  useEffect(() => {
+    try {
+      getContacts();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const getContacts = async () => {
+    const { data } = await axios.get(`${BACKEND}/users/contacts/${uid}`);
+    setContacts(data.contacts);
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+      const response = await axios.post(
+        `${BACKEND}/users/contacts/create-contact`,
+        {
+          userUid: uid,
+          name: name,
+          email: email,
+          phone: phoneNumber,
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
     // Here you can do something with the name, phone number, and email, like storing them in a database
-    const newContact = { name, phoneNumber, email };
-    setContacts([...contacts, newContact]);
     setName("");
     setPhoneNumber("");
     setEmail("");
@@ -119,15 +148,15 @@ const Contacts = () => {
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Phone Number</TableCell>
-                <TableCell>Email</TableCell> {/* Added */}
+                <TableCell>Email</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {contacts.map((contact, index) => (
                 <TableRow key={index}>
                   <TableCell>{contact.name}</TableCell>
-                  <TableCell>{contact.phoneNumber}</TableCell>
-                  <TableCell>{contact.email}</TableCell> {/* Added */}
+                  <TableCell>{contact.phone}</TableCell>
+                  <TableCell>{contact.email}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
