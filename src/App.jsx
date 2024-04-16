@@ -23,7 +23,7 @@ function App() {
       element: <Cases />,
     },
     {
-      path: "/cases/:id",
+      path: "/cases/:area",
       element: <SingleArea />,
     },
     {

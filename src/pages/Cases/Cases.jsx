@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import {
   Table,
@@ -11,12 +11,26 @@ import {
   Button,
 } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { BACKEND } from "../../constants";
 
 const Cases = () => {
   const navigate = useNavigate();
+  const [areas, setAreas] = useState([]);
 
-  const handleClick = () => {
-    navigate(`1`);
+  useEffect(() => {
+    fetchAreas();
+  }, []);
+
+  const fetchAreas = async () => {
+    const { data } = await axios.get(`${BACKEND}/areas/all`);
+    // Sort areas based on cases
+    const sortedAreas = data.areas.sort((a, b) => b.cases - a.cases);
+    setAreas(sortedAreas);
+  };
+
+  const handleClick = (area) => {
+    navigate(`${area.name}`);
   };
 
   return (
@@ -39,19 +53,20 @@ const Cases = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Button onClick={handleClick}>Mohammadpur</Button>
-                </TableCell>
-                <TableCell>69</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Button onClick={handleClick}>Some Other Area</Button>
-                </TableCell>
-                <TableCell>45</TableCell>
-              </TableRow>
-              {/* Add more rows as needed */}
+              {areas?.map((area, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        handleClick(area);
+                      }}
+                    >
+                      {area.name}
+                    </Button>
+                  </TableCell>
+                  <TableCell>{area.cases}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

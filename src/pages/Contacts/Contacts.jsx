@@ -71,10 +71,10 @@ const Contacts = () => {
         }
       );
       console.log(response);
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
-    // Here you can do something with the name, phone number, and email, like storing them in a database
     setName("");
     setPhoneNumber("");
     setEmail("");

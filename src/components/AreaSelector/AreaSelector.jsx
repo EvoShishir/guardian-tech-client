@@ -10,12 +10,12 @@ const AreaSelector = () => {
   const [elakas, setElakas] = useState([]);
   const [rastas, setRastas] = useState([]);
 
-  const timerValue = 300;
-  const emergencyTimerValue = 360;
+  const timerValue = 10;
+  const emergencyTimerValue = timerValue + 10;
 
   const [area, setArea] = useState(null);
   const [subArea, setSubArea] = useState(null);
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
   const [btnDisabled, setBtnDisabled] = useState(true);
   const [timer, setTimer] = useState(timerValue);
   const [emergencyTimer, setEmergencyTimer] = useState(emergencyTimerValue);
@@ -35,8 +35,15 @@ const AreaSelector = () => {
   };
 
   const fetchSubAreas = async () => {
-    const { data } = await axios.get(`${BACKEND}/areas/${area}`);
-    setRastas(data.subAreaArr);
+    if (area) {
+      const { data } = await axios.get(`${BACKEND}/areas/${area.label}`);
+      setRastas(data.subAreaArr);
+    }
+  };
+
+  const reportUnsafe = async () => {
+    await axios.put(`${BACKEND}/areas/${area.id}/report-case`);
+    await axios.put(`${BACKEND}/areas/subarea/${subArea.id}/report-case`);
   };
 
   const sendNotification = () => {
@@ -47,6 +54,19 @@ const AreaSelector = () => {
       duration: 60000,
       native: true, // when using native, your OS will handle theming.
     });
+  };
+
+  const dispatchHelp = async () => {
+    try {
+      const uid = localStorage.getItem("uid");
+      const response = await axios.post(`${BACKEND}/users/help/${uid}`, {
+        area: area.label,
+        subArea: subArea.label,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const startCountdown = () => {
@@ -73,6 +93,7 @@ const AreaSelector = () => {
         } else {
           // Handle emergency action here
           clearInterval(emergencyInterval);
+          dispatchHelp();
           return prevTimer;
         }
       });
@@ -103,10 +124,9 @@ const AreaSelector = () => {
               onChange={(e, newValue) => {
                 e.preventDefault();
                 setArea(newValue);
-                setDisabled(false);
-                // fetchSubAreas();
               }}
               id="controllable-states-demo"
+              disabled={disabled}
               options={elakas}
               sx={{ width: 300 }}
               renderInput={(params) => (
@@ -135,10 +155,12 @@ const AreaSelector = () => {
         <br />
         <Button
           onClick={() => {
+            reportUnsafe();
             startCountdown();
             startEmergencyCountdown();
             setDisplayTimer("block");
             setBtnDisabled(true);
+            setDisabled(true);
           }}
           fullWidth
           disabled={btnDisabled}
