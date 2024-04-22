@@ -38,7 +38,7 @@ const Navbar = () => {
         margin: "auto",
         alignItems: "center",
         justifyContent: "space-between",
-        width: "1000px",
+        maxWidth: "1000px",
       }}
     >
       <a href="/" style={{ textDecoration: "none", color: "black" }}>

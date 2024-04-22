@@ -10,8 +10,8 @@ const AreaSelector = () => {
   const [elakas, setElakas] = useState([]);
   const [rastas, setRastas] = useState([]);
 
-  const timerValue = 10;
-  const emergencyTimerValue = timerValue + 10;
+  const timerValue = 300;
+  const emergencyTimerValue = timerValue + 60;
 
   const [area, setArea] = useState(null);
   const [subArea, setSubArea] = useState(null);

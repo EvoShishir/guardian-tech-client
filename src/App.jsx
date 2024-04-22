@@ -20,11 +20,19 @@ function App() {
     },
     {
       path: "/cases",
-      element: <Cases />,
+      element: (
+        <ProtectedRoute>
+          <Cases />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/cases/:area",
-      element: <SingleArea />,
+      element: (
+        <ProtectedRoute>
+          <SingleArea />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/login",
@@ -36,7 +44,11 @@ function App() {
     },
     {
       path: "/contacts",
-      element: <Contacts />,
+      element: (
+        <ProtectedRoute>
+          <Contacts />
+        </ProtectedRoute>
+      ),
     },
   ]);
 
